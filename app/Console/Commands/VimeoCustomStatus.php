@@ -60,9 +60,6 @@ class VimeoCustomStatus extends Command
         $jsonArray = ($targetUrl);
         $oldJsonData = Storage::disk('public')->get('/json/video_targets.json');
         $oldJsonData = json_decode($oldJsonData);
-//        print_r((array)$oldJsonData);
-//        print_r($jsonArray);
-
         $oldJsonData = ((array)$oldJsonData);
         array_push($oldJsonData, $jsonArray);
 

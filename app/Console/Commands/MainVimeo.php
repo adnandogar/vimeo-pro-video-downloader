@@ -51,8 +51,6 @@ class MainVimeo extends Command
             $video_ids = $this->getFromJson();
             foreach ($video_ids as $video_id){
                 call_in_background('vimeo:download '.$video_id['VimeoID']);
-
-//                Artisan::call("vimeo:download", ['video_id' => $video_id['VimeoID'] ]);
             }
             for($i=0;$i<=$no_of_commands;$i++)
             {
@@ -71,11 +69,6 @@ class MainVimeo extends Command
             foreach ($video_ids as $video_id){
                 call_in_background('vimeo:download '.$video_id);
             }
-
-
         }
-
-
-
     }
 }
