@@ -12,7 +12,7 @@ class MainVimeo extends Command
      *
      * @var string
      */
-    protected $signature = 'vimeo:start {no?}';
+    protected $signature = 'vimeo:start {no?} {--video_ids=}';
 
     /**
      * The console command description.
@@ -46,19 +46,18 @@ class MainVimeo extends Command
     public function handle()
     {
         //
-        $no_of_commands = $this->argument('no');
+        $no_of_commands = $this->argument('no',0);
         if($no_of_commands > 0){
             $video_ids = $this->getFromJson();
             foreach ($video_ids as $video_id){
-//                print_r($video_id);
                 call_in_background('vimeo:download '.$video_id['VimeoID']);
 
 //                Artisan::call("vimeo:download", ['video_id' => $video_id['VimeoID'] ]);
             }
-//            for($i=0;$i<=$no_of_commands;$i++)
-//            {
-//                Artisan::call("vimeo:download ".$video_id);
-//            }
+            for($i=0;$i<=$no_of_commands;$i++)
+            {
+                Artisan::call("vimeo:download ".$video_id);
+            }
 
         }else{
 
@@ -70,7 +69,7 @@ class MainVimeo extends Command
             }
             $video_ids = $final_columns;
             foreach ($video_ids as $video_id){
-                Artisan::call("vimeo:download ".$video_id);
+                call_in_background('vimeo:download '.$video_id);
             }
 
 
