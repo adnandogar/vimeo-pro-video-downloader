@@ -9,11 +9,11 @@
         "devswebdev/devtube": "^1.0",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
+        "illuminated/helper-functions": "^5.7",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
-        "vimeo/laravel": "^5.1",
-        "nesbot/carbon": "^1.33"
-
+        "nesbot/carbon": "^1.33",
+        "vimeo/laravel": "^5.1"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

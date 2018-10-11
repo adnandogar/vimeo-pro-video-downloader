@@ -18,12 +18,12 @@ class VimeoController extends Controller
 //        Vimeo::request('https://player.vimeo.com/play/1116961057?s=293961513_1539206530_565bc528076308fc5651983e4ad15b1e&loc=external&context=Vimeo%5CController%5CApi%5CResources%5CUser%5CVideoController.&download=1&filename=VID_20181002_180643source.mp4');
 //        dd($videos);
 
-        $toFile = '/var/www/example/';
-
-        $fromUrl = 'https://player.vimeo.com/play/1116961057?s=293961513_1539206530_565bc528076308fc5651983e4ad15b1e&loc=external&context=Vimeo%5CController%5CApi%5CResources%5CUser%5CVideoController.&download=1&filename=VID_20181002_180643source.mp4';
+//        $toFile = '/var/www/example/';
 //
-        exec('wget  "https://player.vimeo.com/play/1116961057?s=293961513_1539206530_565bc528076308fc5651983e4ad15b1e&loc=external&context=Vimeo%5CController%5CApi%5CResources%5CUser%5CVideoController.&download=1&filename=VID_20181002_180643source.mp4" -O /var/www/example/abc2.mp4',$output);
-        echo implode('<br />', $output);
+//        $fromUrl = 'https://player.vimeo.com/play/1116961057?s=293961513_1539206530_565bc528076308fc5651983e4ad15b1e&loc=external&context=Vimeo%5CController%5CApi%5CResources%5CUser%5CVideoController.&download=1&filename=VID_20181002_180643source.mp4';
+////
+//        exec('wget  "https://player.vimeo.com/play/1116961057?s=293961513_1539206530_565bc528076308fc5651983e4ad15b1e&loc=external&context=Vimeo%5CController%5CApi%5CResources%5CUser%5CVideoController.&download=1&filename=VID_20181002_180643source.mp4" -O /var/www/example/abc2.mp4',$output);
+//        echo implode('<br />', $output);
 
 
 

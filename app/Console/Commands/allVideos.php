@@ -43,16 +43,22 @@ class allVideos extends Command
         $videos = Vimeo::request('/me/videos/', ['per_page' => 10], 'GET');
 
         foreach ($videos['body']['data'] as $video) {
-            $dataV['video_main_url'] = $video['download'][4]['link'];
+
+            $dataV['video_main_url'] = isset($video['download'][0]['link']) ? $video['download'][0]['link'] : $video['download'][0][0]['link'];
             $dataV['client_id'] = trim(str_replace("https://vimeo.com/user"," ",$video['user']['link']));
             $video_links = explode("/",$video['uri']);
             $dataV['video_id'] = $video_links[2];
             $dataV['name'] = $video['name'];
-            $dataV['size'] =  $video['download'][4]['size'];
+            $dataV['size'] =  isset($video['download'][0]['size']) ? $video['download'][0]['size'] : $video['download'][0][0]['size'];
             $dataV['status'] = 0;
 
-            DB::table("videos_feed")
-            ->insert($dataV);
+            $alreadyAvilable = DB::table("videos_feed")
+                ->where("video_id","=",$dataV['video_id'])
+                ->first();
+            if(is_null($alreadyAvilable)){
+                DB::table("videos_feed")
+                    ->insert($dataV);
+            }
         }
 //        print_r($videos);
     }
