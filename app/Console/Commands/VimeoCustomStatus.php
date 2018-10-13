@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Vimeo\Laravel\Facades\Vimeo;
@@ -55,19 +56,14 @@ class VimeoCustomStatus extends Command
 
     public function handle()
     {
+        $gDisk = Storage::disk('gcs');
+        $localDisk = Storage::disk('public');
         $video_id = $this->argument('video_id');
         $client_id = $this->argument('client_id');
         $targetUrl = $this->findSourceVideo($video_id);
         $jsonArray = ($targetUrl);
-        $oldJsonData = Storage::disk('public')->get('/json/video_targets.json');
-        $oldJsonData = json_decode($oldJsonData);
-        $oldJsonData = ((array)$oldJsonData);
-        array_push($oldJsonData, $jsonArray);
-
-        $gDisk = Storage::disk('gcs');
-        $localDisk = Storage::disk('public');
-        $localDisk->put('/json/video_targets.json', json_encode($oldJsonData));
-
+        $jsonArray['client_id'] = $client_id;
+        $jsonArray['time_started'] = Carbon::now();
 
         $fromUrl = $targetUrl['video_main_url'];
         try {
@@ -94,6 +90,22 @@ class VimeoCustomStatus extends Command
             $contents = $localDisk->get($bucket.$client_id."/".$video_id.".mp4");
             $gDisk->put($bucket.$client_id."/".$video_id.".mp4", $contents);
             echo "Gcloud uploaded!";
+            $ended_time = Carbon::now();
+            $jsonArray['ended_time'] = $ended_time;
+            // now time to update ended time and elapsed time.
+            $jsonArray['elapsed_time'] = $ended_time->diffInSeconds($jsonArray['time_started']);
+
+            // store into json data
+            $oldJsonData = Storage::disk('public')->get('/json/video_targets.json');
+            $oldJsonData = json_decode($oldJsonData);
+            $oldJsonData = ((array)$oldJsonData);
+
+            array_push($oldJsonData, $jsonArray);
+
+            $localDisk->put('/json/video_targets.json', json_encode($oldJsonData));
+
+
+
         }catch (\Exception $ex) {
             //if already created
             Log::debug($ex->getMessage());

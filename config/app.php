@@ -110,7 +110,7 @@ return [
 
     //gcloud storage config
 
-    'gcs_base_url' => '/var/www/vimeo/public/storage/',
+    'gcs_base_url' => '/var/www/vimeo-pro-video-downloader/public/storage/',
     'gcs_bucket' => 'vimeo/',
 
     /*
