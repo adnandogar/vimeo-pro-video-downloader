@@ -108,6 +108,11 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    //gcloud storage config
+
+    'gcs_base_url' => '/var/www/vimeo/public/storage/',
+    'gcs_bucket' => 'vimeo/',
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
@@ -159,7 +164,9 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Vimeo\Laravel\VimeoServiceProvider::class
+        Vimeo\Laravel\VimeoServiceProvider::class,
+        Superbalist\LaravelGoogleCloudStorage\GoogleCloudStorageServiceProvider::class,
+
 
     ],
 

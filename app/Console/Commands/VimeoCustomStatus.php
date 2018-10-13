@@ -14,7 +14,7 @@ class VimeoCustomStatus extends Command
      *
      * @var string
      */
-    protected $signature = 'vimeo:download {video_id}';
+    protected $signature = 'vimeo:download {client_id} {video_id}';
 
     /**
      * The console command description.
@@ -56,6 +56,7 @@ class VimeoCustomStatus extends Command
     public function handle()
     {
         $video_id = $this->argument('video_id');
+        $client_id = $this->argument('client_id');
         $targetUrl = $this->findSourceVideo($video_id);
         $jsonArray = ($targetUrl);
         $oldJsonData = Storage::disk('public')->get('/json/video_targets.json');
@@ -63,25 +64,39 @@ class VimeoCustomStatus extends Command
         $oldJsonData = ((array)$oldJsonData);
         array_push($oldJsonData, $jsonArray);
 
-        Storage::disk('public')->put('/json/video_targets.json', json_encode($oldJsonData));
+        $gDisk = Storage::disk('gcs');
+        $localDisk = Storage::disk('public');
+        $localDisk->put('/json/video_targets.json', json_encode($oldJsonData));
+
 
         $fromUrl = $targetUrl['video_main_url'];
         try {
             // lets make a directory.
             try {
-                exec(mkdir('/var/www/example/', 0777));
+                $bucket = $value = config('app.gcs_bucket');
+                $gcs_base_url = config('app.gcs_base_url');
+                $localDisk->makeDirectory($bucket.$client_id);
+//                exec(mkdir($gcs_base_url.$bucket.$client_id, 0777));
             } catch (\Exception $ex) {
                 //if already created
                 Log::info($ex->getMessage());
             }
+            $local_base_url = $gcs_base_url.$bucket.$client_id;
+            echo $local_base_url."\n";
             // start downloading the exact video.
-            exec('wget "' . $fromUrl . '" -O /var/www/example/' . $video_id . '.mp4', $output);
+            $output = shell_exec('wget "' . $fromUrl . '" -O '.$local_base_url."/" . $video_id . '.mp4');
             \Log::info($output);
 
+            //now time to put in gcloud storage
 
+            $gDisk->makeDirectory($bucket.$client_id);
+            echo "Now we need to upload on gcloucd!"."\n";
+            $contents = $localDisk->get($bucket.$client_id."/".$video_id.".mp4");
+            $gDisk->put($bucket.$client_id."/".$video_id.".mp4", $contents);
+            echo "Gcloud uploaded!";
         }catch (\Exception $ex) {
             //if already created
-            Log::info($ex->getMessage());
+            Log::debug($ex->getMessage());
         }
     }
 

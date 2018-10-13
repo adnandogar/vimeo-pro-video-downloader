@@ -12,7 +12,10 @@
         "illuminated/helper-functions": "^5.7",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
+        "league/flysystem-aws-s3-v3": "^1.0",
         "nesbot/carbon": "^1.33",
+        "superbalist/flysystem-google-storage": "^7.1",
+        "superbalist/laravel-google-cloud-storage": "^2.0",
         "vimeo/laravel": "^5.1"
     },
     "require-dev": {
