@@ -72,7 +72,7 @@ return [
         'gcs' => [
             'driver' => 'gcs',
             'project_id' => env('GOOGLE_CLOUD_PROJECT_ID', '880035546333'),
-            'key_file' => env('GOOGLE_CLOUD_KEY_FILE', '/var/www/example/vimeo-1a76ce7c072d.json'),
+            'key_file' => env('GOOGLE_CLOUD_KEY_FILE', '/var/www/example/vimeocloud.json'),
             // optional: /path/to/service-account.json
             'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET', 'vimeo-downloader'),
             'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', null),
