@@ -15,7 +15,7 @@ class VimeoController extends Controller
     {
         $id = $request->input('id');
         $videos = Vimeo::request('/me/videos/'.$id, ['per_page' => 10], 'GET');
-        Vimeo::request('https://player.vimeo.com/play/1116961057?s=293961513_1539206530_565bc528076308fc5651983e4ad15b1e&loc=external&context=Vimeo%5CController%5CApi%5CResources%5CUser%5CVideoController.&download=1&filename=VID_20181002_180643source.mp4');
+//        Vimeo::request('https://player.vimeo.com/play/1116961057?s=293961513_1539206530_565bc528076308fc5651983e4ad15b1e&loc=external&context=Vimeo%5CController%5CApi%5CResources%5CUser%5CVideoController.&download=1&filename=VID_20181002_180643source.mp4');
         dd($videos);
 
 //        $toFile = '/var/www/example/';

@@ -44,12 +44,23 @@ class VimeoCustomStatus extends Command
     {
         $latestRequest = Vimeo::request('/me/videos/' . $video_id, ['per_page' => 10], 'GET');
 //        dd($latestRequest);
-        $dataV['video_main_url'] = isset($latestRequest['body']['download'][0]['link']) ? $latestRequest['body']['download'][0]['link'] : $latestRequest['body']['download'][0][0]['link'];
+        if(isset($latestRequest['body']['files'][0]['link'])){
+            $dataV['video_main_url'] = isset($latestRequest['body']['files'][0]['link']) ? $latestRequest['body']['download'][0]['link'] : $latestRequest['files']['download'][0][0]['link'];
+            $dataV['size'] = isset($latestRequest['body']['files'][0]['size']) ? $latestRequest['body']['files'][0]['size'] : $latestRequest['body']['files'][0][0]['size'];
+            $dataV['md5'] = isset($latestRequest['body']['files'][0]['md5']) ? $latestRequest['body']['files'][0]['md5'] : $latestRequest['body']['files'][0][0]['md5'];
+            $dataV['type'] = isset($latestRequest['body']['files'][0]['type']) ? $latestRequest['body']['files'][0]['type'] : $latestRequest['body']['files'][0][0]['type'];
+        }else{
+            $dataV['video_main_url'] = isset($latestRequest['body']['download'][0]['link']) ? $latestRequest['body']['download'][0]['link'] : $latestRequest['body']['download'][0][0]['link'];
+            $dataV['size'] = isset($latestRequest['body']['download'][0]['size']) ? $latestRequest['body']['download'][0]['size'] : $latestRequest['body']['download'][0][0]['size'];
+            $dataV['md5'] = isset($latestRequest['body']['download'][0]['md5']) ? $latestRequest['body']['download'][0]['md5'] : $latestRequest['body']['download'][0][0]['md5'];
+            $dataV['type'] = isset($latestRequest['body']['download'][0]['type']) ? $latestRequest['body']['download'][0]['type'] : $latestRequest['body']['download'][0][0]['type'];
+        }
+
+        $video_extension = explode("/",$dataV['type']);
+        $dataV['video_extension'] = $video_extension[1];
         $dataV['video_uri'] = $latestRequest['body']['uri'];
         $dataV['video_id'] = $video_id;
         $dataV['name'] = $latestRequest['body']['name'];
-        $dataV['size'] = isset($latestRequest['body']['download'][0]['size']) ? $latestRequest['body']['download'][0]['size'] : $latestRequest['body']['download'][0][0]['size'];
-        $dataV['md5'] = isset($latestRequest['body']['download'][0]['md5']) ? $latestRequest['body']['download'][0]['md5'] : $latestRequest['body']['download'][0][0]['md5'];
         $dataV['status'] = 2;
         return $dataV;
     }
@@ -78,9 +89,10 @@ class VimeoCustomStatus extends Command
                 Log::info($ex->getMessage());
             }
             $local_base_url = $gcs_base_url.$bucket.$client_id;
-            echo $local_base_url."\n";
+//            echo $local_base_url."\n";
             // start downloading the exact video.
-            $output = shell_exec('wget "' . $fromUrl . '" -O '.$local_base_url."/" . $video_id . '.mp4');
+            if(!$gDisk->has($bucket.$client_id."/".$video_id. "." .$jsonArray['video_extension'])){
+            $output = shell_exec('wget "' . $fromUrl . '" -O '.$local_base_url."/" . $video_id . "." .$jsonArray['video_extension']);
             \Log::info($output);
 
             //now time to put in gcloud storage
@@ -88,8 +100,12 @@ class VimeoCustomStatus extends Command
             $gDisk->makeDirectory($bucket.$client_id);
             echo "Now we need to upload on gcloucd!"."\n";
             $contents = $localDisk->get($bucket.$client_id."/".$video_id.".mp4");
-            $gDisk->put($bucket.$client_id."/".$video_id.".mp4", $contents);
-            echo "Gcloud uploaded!";
+
+                $gDisk->put($bucket.$client_id."/".$video_id.".mp4", $contents);
+                echo "Gcloud uploaded!";
+            }else{
+                echo "already Exists!";
+            }
             $ended_time = Carbon::now();
             $jsonArray['ended_time'] = $ended_time;
             // now time to update ended time and elapsed time.
@@ -103,7 +119,7 @@ class VimeoCustomStatus extends Command
             array_push($oldJsonData, $jsonArray);
 
             $localDisk->put('/json/video_targets.json', json_encode($oldJsonData));
-
+            $gDisk->put('video_targets.json', json_encode($oldJsonData));
 
 
         }catch (\Exception $ex) {

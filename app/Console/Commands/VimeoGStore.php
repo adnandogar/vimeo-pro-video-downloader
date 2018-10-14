@@ -57,9 +57,14 @@ class VimeoGStore extends Command
 //
 //        $disk = Storage::disk('gcs');
         echo "Now we need to upload on gcloucd!"."\n";
+
         $contents = $localDisk->get('vimeo/839394989384/294366428.mp4');
-        $gDisk->put($bucket.$client_id."/".$video_id.".mp4", $contents);
-        echo "not uploaded";
+        if(!$gDisk->has($bucket.$client_id."/".$video_id.".mp4", $contents)){
+            $gDisk->put($bucket.$client_id."/".$video_id.".mp4", $contents);
+        }else{
+            echo "not uploaded";
+
+        }
 
 //        $contents = $localDisk->get('294366471.mp4');
 

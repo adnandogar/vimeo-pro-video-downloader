@@ -45,17 +45,11 @@ class MainVimeo extends Command
 
     public function handle()
     {
-        //
         $no_of_commands = $this->argument('no',0);
         $client_id = $this->argument('client_id',Null);
         if($no_of_commands > 0){
-            $video_ids = $this->getFromJson();
-            $i = 0;
-            foreach ($video_ids as $video_id){
-//                if($i<$no_of_commands){
-                    call_in_background('vimeo:download '.$video_id['ClientID']." ".$video_id['VimeoID']);
-//                }
-                $i++;
+            for($i=1;$i<=$no_of_commands;$i++){
+                    call_in_background('vimeo:threads');
             }
 
         }else{
