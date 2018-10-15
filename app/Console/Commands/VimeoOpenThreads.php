@@ -57,7 +57,7 @@ class VimeoOpenThreads extends Command
         }
 
         $video_extension = explode("/",$dataV['type']);
-        $dataV['video_extension'] = $video_extension[1];
+        $dataV['video_extension'] = isset($video_extension[1]) ? ($video_extension[1]) : 'mp4';
         $dataV['video_uri'] = $latestRequest['body']['uri'];
         $dataV['video_id'] = $video_id;
         $dataV['name'] = $latestRequest['body']['name'];
