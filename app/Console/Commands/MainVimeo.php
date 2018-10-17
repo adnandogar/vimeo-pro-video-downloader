@@ -54,7 +54,6 @@ class MainVimeo extends Command
 
         }else{
 
-
             $columns = $this->option('video_ids');
             $final_columns = [];
             foreach(explode(",", $columns) as $column) {

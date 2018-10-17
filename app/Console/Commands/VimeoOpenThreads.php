@@ -114,10 +114,22 @@ class VimeoOpenThreads extends Command
                     $gDisk->put($bucket . $client_id . "/" . $video_id . ".mp4", $contents);
                     echo "Gcloud uploaded!";
 
+                    //now delete file from local
+                    $localDisk->delete($bucket . $client_id . "/" . $video_id . ".mp4");
+
                     $ended_time = Carbon::now();
                     $jsonArray['ended_time'] = $ended_time;
                     // now time to update ended time and elapsed time.
                     $jsonArray['elapsed_time'] = $ended_time->diffInSeconds($jsonArray['time_started']);
+
+                    //check size
+                    $gSize = $gDisk->size($bucket.$client_id."/".$video_id.".mp4")."\n";
+                    $jsonArray['size'];
+                    if($gSize != $jsonArray['size']){
+                        $jsonArray['size_error'] = 'error on transfer file size '.$gSize.' doesnt match with vimeo file size '.$jsonArray[size];
+                    }else{
+                        $jsonArray['size_success'] = 'file size  on transfer file size '.$gSize.' matched with vimeo file size '.$jsonArray[size];
+                    }
 
                     // store into json data
                     $oldJsonData = Storage::disk('public')->get('/json/video_targets.json');
