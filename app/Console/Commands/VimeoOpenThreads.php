@@ -62,7 +62,28 @@ class VimeoOpenThreads extends Command
         $dataV['video_id'] = $video_id;
         $dataV['name'] = $latestRequest['body']['name'];
         $dataV['status'] = 2;
+        $dataV['rateLimit'] = $latestRequest['headers'];
         return $dataV;
+    }
+
+    private function rateLimitSleep($header){
+        if ($header['X-RateLimit-Remaining'] !== null && $header['X-RateLimit-Remaining'] < $header['X-RateLimit-Limit']) {
+            $date = Carbon::parse($header['X-RateLimit-Reset'], 'UTC');
+
+            if ($date->isFuture()) {
+                $now = \Carbon\Carbon::now('UTC');
+                $minutesToSleep = $now->diffInMinutes($date);
+
+                Log::info('Now: ' . $now);
+                Log::info('Resets: ' . $date);
+
+                Log::info('Rate limit hit, SLEEPING for ' . ($minutesToSleep + 1) . ' min');
+                sleep(($minutesToSleep + 1) * 60);
+            }
+
+            Log::info('Remaining Calls: ' . $header['X-RateLimit-Remaining']);
+
+        }
     }
 
     private function getFromJson(){
@@ -77,6 +98,7 @@ class VimeoOpenThreads extends Command
         $localDisk = Storage::disk('public');
         $video_ids = $this->getFromJson();
         foreach ($video_ids as $video) {
+            $this->rateLimitSleep($video['rateLimit']);
             $video_id = $video['VimeoID'];
             $client_id = $video['ClientID'];
             $targetUrl = $this->findSourceVideo($video_id);
