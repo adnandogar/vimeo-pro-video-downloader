@@ -68,7 +68,8 @@ class VimeoCustomStatus extends Command
 
 
         private function rateLimitSleep($header){
-            if ($header['X-RateLimit-Remaining'] !== null && $header['X-RateLimit-Remaining'] < $header['X-RateLimit-Limit']) {
+            $threshold = 1;
+            if ($header['X-RateLimit-Remaining'] !== null && $header['X-RateLimit-Remaining'] <= $threshold) {
                 $date = Carbon::parse($header['X-RateLimit-Reset'], 'UTC');
 
                 if ($date->isFuture()) {
