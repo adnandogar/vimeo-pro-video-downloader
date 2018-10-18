@@ -99,10 +99,10 @@ class VimeoOpenThreads extends Command
         $localDisk = Storage::disk('public');
         $video_ids = $this->getFromJson();
         foreach ($video_ids as $video) {
-            $this->rateLimitSleep($video['rateLimit']);
             $video_id = $video['VimeoID'];
             $client_id = $video['ClientID'];
             $targetUrl = $this->findSourceVideo($video_id);
+            $this->rateLimitSleep($targetUrl['rateLimit']);
             $jsonArray = ($targetUrl);
             $jsonArray['client_id'] = $client_id;
             $jsonArray['time_started'] = Carbon::now();
