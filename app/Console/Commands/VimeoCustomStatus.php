@@ -40,20 +40,32 @@ class VimeoCustomStatus extends Command
      * @return mixed
      */
 
+    private function getExactlySourceQuality($latestRequest){
+        $data = [];
+        if(isset($latestRequest['body']['download'][0] ))
+        foreach ($latestRequest['body']['download'] as $source){
+            if($source['quality'] == 'source')
+            {
+                $data['video_main_url'] = $source['link'];
+                $data['size'] = $source['size'];
+                $data['md5'] = $source['md5'];
+                $data['type'] = $source['type'];
+            }
+        }
+
+        return $data;
+    }
+
     private function findSourceVideo($video_id)
     {
         $latestRequest = Vimeo::request('/me/videos/' . $video_id, ['per_page' => 10], 'GET');
 //        dd($latestRequest);
-        if(isset($latestRequest['body']['files'][0]['link'])){
+        $dataV = $this->getExactlySourceQuality($latestRequest);
+        if(is_null($dataV)){
             $dataV['video_main_url'] = isset($latestRequest['body']['files'][0]['link']) ? $latestRequest['body']['download'][0]['link'] : $latestRequest['files']['download'][0][0]['link'];
             $dataV['size'] = isset($latestRequest['body']['files'][0]['size']) ? $latestRequest['body']['files'][0]['size'] : $latestRequest['body']['files'][0][0]['size'];
             $dataV['md5'] = isset($latestRequest['body']['files'][0]['md5']) ? $latestRequest['body']['files'][0]['md5'] : $latestRequest['body']['files'][0][0]['md5'];
             $dataV['type'] = isset($latestRequest['body']['files'][0]['type']) ? $latestRequest['body']['files'][0]['type'] : $latestRequest['body']['files'][0][0]['type'];
-        }else{
-            $dataV['video_main_url'] = isset($latestRequest['body']['download'][0]['link']) ? $latestRequest['body']['download'][0]['link'] : $latestRequest['body']['download'][0][0]['link'];
-            $dataV['size'] = isset($latestRequest['body']['download'][0]['size']) ? $latestRequest['body']['download'][0]['size'] : $latestRequest['body']['download'][0][0]['size'];
-            $dataV['md5'] = isset($latestRequest['body']['download'][0]['md5']) ? $latestRequest['body']['download'][0]['md5'] : $latestRequest['body']['download'][0][0]['md5'];
-            $dataV['type'] = isset($latestRequest['body']['download'][0]['type']) ? $latestRequest['body']['download'][0]['type'] : $latestRequest['body']['download'][0][0]['type'];
         }
 
         $video_extension = explode("/",$dataV['type']);
