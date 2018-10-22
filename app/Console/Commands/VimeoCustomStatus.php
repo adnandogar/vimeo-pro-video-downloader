@@ -15,7 +15,7 @@ class VimeoCustomStatus extends Command
      *
      * @var string
      */
-    protected $signature = 'vimeo:download {client_id} {video_id}';
+    protected $signature = 'vimeo:download {client_id} {video_id} {file}';
 
     /**
      * The console command description.
@@ -105,6 +105,7 @@ class VimeoCustomStatus extends Command
         $localDisk = Storage::disk('public');
         $video_id = $this->argument('video_id');
         $client_id = $this->argument('client_id');
+        $file_name = $this->argument('file');
         $targetUrl = $this->findSourceVideo($video_id);
         $this->rateLimitSleep($targetUrl['rateLimit']);
 
@@ -159,14 +160,19 @@ class VimeoCustomStatus extends Command
 
 
             // store into json data
-            $oldJsonData = Storage::disk('public')->get('/json/video_targets.json');
+            if(!Storage::disk('public')->has('/json/'.$file_name))
+            {
+                $contents = [];
+                Storage::disk('public')->put('/json/'.$file_name,json_encode($contents));
+            }
+            $oldJsonData = Storage::disk('public')->get('/json/'.$file_name);
             $oldJsonData = json_decode($oldJsonData);
             $oldJsonData = ((array)$oldJsonData);
 
             array_push($oldJsonData, $jsonArray);
 
-            $localDisk->put('/json/video_targets.json', json_encode($oldJsonData));
-            $gDisk->put('video_targets.json', json_encode($oldJsonData));
+            $localDisk->put('/json/'.$file_name, json_encode($oldJsonData));
+            $gDisk->put($file_name, json_encode($oldJsonData));
             }else{
                 echo "already Exists!";
             }

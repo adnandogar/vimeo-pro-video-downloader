@@ -15,7 +15,7 @@ class VimeoOpenThreads extends Command
      *
      * @var string
      */
-    protected $signature = 'vimeo:threads';
+    protected $signature = 'vimeo:threads {file}';
 
     /**
      * The console command description.
@@ -107,6 +107,8 @@ class VimeoOpenThreads extends Command
 
     public function handle()
     {
+        $file_name = $this->argument('file');
+
         $gDisk = Storage::disk('gcs');
         $localDisk = Storage::disk('public');
         $video_ids = $this->getFromJson();
@@ -165,15 +167,20 @@ class VimeoOpenThreads extends Command
                     }else{
                         $jsonArray['size_success'] = 'file size  on transfer file size '.$gSize.' matched with vimeo file size '.$jsonArray['size'];
                     }
-                    // store into json data
-                    $oldJsonData = Storage::disk('public')->get('/json/video_targets.json');
+
+                    if(!Storage::disk('public')->has('/json/'.$file_name))
+                    {
+                        $contents = [];
+                        Storage::disk('public')->put('/json/'.$file_name,json_encode($contents));
+                    }
+                    $oldJsonData = Storage::disk('public')->get('/json/'.$file_name);
                     $oldJsonData = json_decode($oldJsonData);
                     $oldJsonData = ((array)$oldJsonData);
 
                     array_push($oldJsonData, $jsonArray);
 
-                    $localDisk->put('/json/video_targets.json', json_encode($oldJsonData));
-                    $gDisk->put('video_targets.json', json_encode($oldJsonData));
+                    $localDisk->put('/json/'.$file_name, json_encode($oldJsonData));
+                    $gDisk->put($file_name, json_encode($oldJsonData));
 
                 } else {
                     echo "already Exists!";
