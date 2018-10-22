@@ -59,7 +59,7 @@ class VimeoOpenThreads extends Command
     private function findSourceVideo($video_id)
     {
         $latestRequest = Vimeo::request('/me/videos/' . $video_id, ['per_page' => 10], 'GET');
-        dd($latestRequest);
+//        dd($latestRequest);
         $dataV = $this->getExactlySourceQuality($latestRequest);
         if(is_null($dataV)){
             $dataV['video_main_url'] = isset($latestRequest['body']['files'][0]['link']) ? $latestRequest['body']['download'][0]['link'] : $latestRequest['files']['download'][0][0]['link'];
@@ -68,7 +68,7 @@ class VimeoOpenThreads extends Command
             $dataV['type'] = isset($latestRequest['body']['files'][0]['type']) ? $latestRequest['body']['files'][0]['type'] : $latestRequest['body']['files'][0][0]['type'];
         }
 
-        print_r($dataV);
+//        print_r($dataV);
 
         $video_extension = explode("/",$dataV['type']);
         $dataV['video_extension'] = isset($video_extension[1]) ? ($video_extension[1]) : 'mp4';
@@ -171,7 +171,7 @@ class VimeoOpenThreads extends Command
                     }else{
                         $jsonArray['size_success'] = 'file size  on transfer file size '.$gSize.' matched with vimeo file size '.$jsonArray['size'];
                     }
-                    
+
                     $file_name = 'output_'.$file_name;
                     if(!Storage::disk('public')->has('/json/'.$file_name))
                     {
