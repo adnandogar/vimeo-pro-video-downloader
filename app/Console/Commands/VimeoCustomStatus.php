@@ -105,7 +105,11 @@ class VimeoCustomStatus extends Command
         $localDisk = Storage::disk('public');
         $video_id = $this->argument('video_id');
         $client_id = $this->argument('client_id');
+//        $in_file = $this->argument('in_file');
+        //out file
         $file_name = $this->argument('file');
+
+
         $targetUrl = $this->findSourceVideo($video_id);
         $this->rateLimitSleep($targetUrl['rateLimit']);
 

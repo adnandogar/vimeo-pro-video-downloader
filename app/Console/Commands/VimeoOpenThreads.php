@@ -15,7 +15,7 @@ class VimeoOpenThreads extends Command
      *
      * @var string
      */
-    protected $signature = 'vimeo:threads {file}';
+    protected $signature = 'vimeo:threads {in_file} {file}';
 
     /**
      * The console command description.
@@ -59,7 +59,7 @@ class VimeoOpenThreads extends Command
     private function findSourceVideo($video_id)
     {
         $latestRequest = Vimeo::request('/me/videos/' . $video_id, ['per_page' => 10], 'GET');
-//        dd($latestRequest);
+        dd($latestRequest);
         $dataV = $this->getExactlySourceQuality($latestRequest);
         if(is_null($dataV)){
             $dataV['video_main_url'] = isset($latestRequest['body']['files'][0]['link']) ? $latestRequest['body']['download'][0]['link'] : $latestRequest['files']['download'][0][0]['link'];
@@ -67,6 +67,8 @@ class VimeoOpenThreads extends Command
             $dataV['md5'] = isset($latestRequest['body']['files'][0]['md5']) ? $latestRequest['body']['files'][0]['md5'] : $latestRequest['body']['files'][0][0]['md5'];
             $dataV['type'] = isset($latestRequest['body']['files'][0]['type']) ? $latestRequest['body']['files'][0]['type'] : $latestRequest['body']['files'][0][0]['type'];
         }
+
+        print_r($dataV);
 
         $video_extension = explode("/",$dataV['type']);
         $dataV['video_extension'] = isset($video_extension[1]) ? ($video_extension[1]) : 'mp4';
@@ -99,19 +101,21 @@ class VimeoOpenThreads extends Command
         }
     }
 
-    private function getFromJson(){
-        $path = storage_path() . "/json/video_feed.json"; // ie: /var/www/laravel/app/storage/json/filename.json
+    private function getFromJson($in_file){
+        $path = storage_path() . "/json/".$in_file; // ie: /var/www/laravel/app/storage/json/filename.json
         $json = json_decode(file_get_contents($path), true);
         return $json;
     }
 
     public function handle()
     {
+        $in_file = $this->argument('in_file');
+        //out file
         $file_name = $this->argument('file');
 
         $gDisk = Storage::disk('gcs');
         $localDisk = Storage::disk('public');
-        $video_ids = $this->getFromJson();
+        $video_ids = $this->getFromJson($in_file);
         foreach ($video_ids as $video) {
             $video_id = $video['VimeoID'];
             $client_id = $video['ClientID'];

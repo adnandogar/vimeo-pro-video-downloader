@@ -12,7 +12,7 @@ class MainVimeo extends Command
      *
      * @var string
      */
-    protected $signature = 'vimeo:start {no?} {client_id?} {--video_ids=} {--file=}';
+    protected $signature = 'vimeo:start {no?} {client_id?} {--video_ids=} {--in_file=} {--out_file=}';
 
     /**
      * The console command description.
@@ -47,10 +47,11 @@ class MainVimeo extends Command
     {
         $no_of_commands = $this->argument('no',0);
         $client_id = $this->argument('client_id',Null);
-        $file = $this->option('file','video_targets.json');
+        $in_file = $this->option('in_file','video_feed.json');
+        $out_file = $this->option('out_file','video_targets.json');
         if($no_of_commands > 0){
             for($i=1;$i<=$no_of_commands;$i++){
-                    call_in_background('vimeo:threads '.$file);
+                    call_in_background('vimeo:threads '.$in_file.' '.$out_file);
             }
 
         }else{
@@ -62,7 +63,7 @@ class MainVimeo extends Command
             }
             $video_ids = $final_columns;
             foreach ($video_ids as $video_id){
-                call_in_background('vimeo:download '.$client_id.' '.$video_id.' '.$file);
+                call_in_background('vimeo:download '.$client_id.' '.$video_id.' '.$out_file);
             }
         }
     }
