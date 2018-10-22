@@ -164,6 +164,7 @@ class VimeoCustomStatus extends Command
 
 
             // store into json data
+                $file_name = 'output_'.$file_name;
             if(!Storage::disk('public')->has('/json/'.$file_name))
             {
                 $contents = [];
@@ -177,6 +178,7 @@ class VimeoCustomStatus extends Command
 
             $localDisk->put('/json/'.$file_name, json_encode($oldJsonData));
             $gDisk->put($file_name, json_encode($oldJsonData));
+
             }else{
                 echo "already Exists!";
             }

@@ -171,7 +171,8 @@ class VimeoOpenThreads extends Command
                     }else{
                         $jsonArray['size_success'] = 'file size  on transfer file size '.$gSize.' matched with vimeo file size '.$jsonArray['size'];
                     }
-
+                    
+                    $file_name = 'output_'.$file_name;
                     if(!Storage::disk('public')->has('/json/'.$file_name))
                     {
                         $contents = [];
