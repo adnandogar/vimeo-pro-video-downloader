@@ -116,6 +116,7 @@ class VimeoOpenThreads extends Command
         $gDisk = Storage::disk('gcs');
         $localDisk = Storage::disk('public');
         $video_ids = $this->getFromJson($in_file);
+        $file_name = 'output_'.$file_name;
         foreach ($video_ids as $video) {
             $video_id = $video['VimeoID'];
             $client_id = $video['ClientID'];
@@ -172,7 +173,7 @@ class VimeoOpenThreads extends Command
                         $jsonArray['size_success'] = 'file size  on transfer file size '.$gSize.' matched with vimeo file size '.$jsonArray['size'];
                     }
 
-                    $file_name = 'output_'.$file_name;
+
                     if(!Storage::disk('public')->has('/json/'.$file_name))
                     {
                         $contents = [];
