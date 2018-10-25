@@ -116,6 +116,7 @@ class VimeoCustomStatus extends Command
         $jsonArray = ($targetUrl);
         $jsonArray['client_id'] = $client_id;
         $jsonArray['time_started'] = Carbon::now();
+        $extension = $targetUrl['video_extension'];
 
         $fromUrl = $targetUrl['video_main_url'];
         try {
@@ -140,12 +141,12 @@ class VimeoCustomStatus extends Command
 
             $gDisk->makeDirectory($bucket.$client_id);
             echo "Now we need to upload on gcloucd!"."\n";
-            $contents = $localDisk->get($bucket.$client_id."/".$video_id.".mp4");
+            $contents = $localDisk->get($bucket.$client_id."/".$video_id.$extension);
 
-            $gDisk->put($bucket.$client_id."/".$video_id.".mp4", $contents);
+            $gDisk->put($bucket.$client_id."/".$video_id.$extension, $contents);
             echo "Gcloud uploaded!";
             //now delete file from local
-            $localDisk->delete($bucket . $client_id . "/" . $video_id . ".mp4");
+            $localDisk->delete($bucket . $client_id . "/" . $video_id . $extension);
 
             $ended_time = Carbon::now();
             $jsonArray['ended_time'] = $ended_time;
@@ -153,7 +154,7 @@ class VimeoCustomStatus extends Command
             $jsonArray['elapsed_time'] = $ended_time->diffInSeconds($jsonArray['time_started']);
 
             //check size
-            $gSize = $gDisk->size($bucket.$client_id."/".$video_id.".mp4")."\n";
+            $gSize = $gDisk->size($bucket.$client_id."/".$video_id.$extension)."\n";
             $jsonArray['size'];
             if($gSize != $jsonArray['size']){
                 $jsonArray['size_error'] = 'error on transfer file size '.$gSize.' doesnt match with vimeo file size '.$jsonArray['size'];
